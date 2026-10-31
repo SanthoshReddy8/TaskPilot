@@ -4,7 +4,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 
 **Stack:** React · TypeScript · Tailwind CSS · Node.js · Express · Prisma · PostgreSQL · JWT · OpenAI
 
-## Features 1–3 — Setup, authentication, and tasks
+## Features 1–4 — Setup, authentication, tasks, status, and priority
 
 - React app at [http://localhost:5173](http://localhost:5173)
 - Express API at [http://localhost:5000](http://localhost:5000)
@@ -13,6 +13,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 - Cookie-based registration, login, current-user, and logout endpoints
 - Protected dashboard with session restoration on page refresh
 - Authenticated users can create, view, edit, and delete their own tasks
+- Per-task Todo, In Progress, and Completed statuses, plus Low, Medium, and High priorities
 
 ## Local setup
 
@@ -56,7 +57,8 @@ cd ..
 This applies the initial schema and the authentication migration, which renames
 the existing password column without discarding user data. It also applies the
 task CRUD migration, making task descriptions optional and indexing each user's
-tasks by creation date.
+tasks by creation date, followed by the status/priority migration, which renames
+the existing priority enum without changing task data.
 
 ### 5. Start frontend and backend
 
@@ -94,9 +96,14 @@ production for separate frontend/backend hosts; deploy behind HTTPS.
 | `DELETE` | `/api/tasks/:id` | Delete a task |
 
 Task requests require the authentication cookie. Task titles are required and
-limited to 200 characters; descriptions are optional and limited to 5000
+limited to 200 characters; descriptions are optional and limited to 2000
 characters. A user's ID always comes from the verified session, and requests for
 another user's task return `404`.
+
+Task updates also accept `status` (`TODO`, `IN_PROGRESS`, `COMPLETED`) and
+`priority` (`LOW`, `MEDIUM`, `HIGH`) independently. New tasks default to `TODO`
+and `MEDIUM`; changing one field preserves the others. The dashboard provides
+status and priority selectors on each task card.
 
 ## Project structure
 
@@ -117,7 +124,7 @@ task-manager/
 1. Project setup and architecture
 2. User authentication — implemented
 3. Task CRUD — implemented
-4. Status and priority
+4. Status and priority — implemented
 5. Deadlines and overdue tasks
 6. Search, filters, and sorting
 7. Productivity dashboard
