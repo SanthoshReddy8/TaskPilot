@@ -1,0 +1,78 @@
+import { useState, type FormEvent } from "react";
+import type { Task, TaskInput } from "../types/task";
+import { TaskApiError } from "../services/taskService";
+
+type TaskFormProps = {
+  task?: Task;
+  onSubmit: (input: TaskInput) => Promise<void>;
+  onCancel?: () => void;
+};
+
+export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setError("Enter a task title.");
+      return;
+    }
+
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await onSubmit({ title: trimmedTitle, description: description.trim() || null });
+      if (!task) {
+        setTitle("");
+        setDescription("");
+      }
+    } catch (cause) {
+      setError(cause instanceof TaskApiError ? cause.message : "Could not save this task. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form className="task-form" onSubmit={handleSubmit}>
+      <label className="sr-only" htmlFor={task ? `edit-title-${task.id}` : "new-task-title"}>
+        Task title
+      </label>
+      <input
+        autoFocus={Boolean(task)}
+        id={task ? `edit-title-${task.id}` : "new-task-title"}
+        maxLength={200}
+        onChange={(event) => setTitle(event.target.value)}
+        placeholder="What needs to get done?"
+        required
+        value={title}
+      />
+      <label className="sr-only" htmlFor={task ? `edit-description-${task.id}` : "new-task-description"}>
+        Description (optional)
+      </label>
+      <textarea
+        id={task ? `edit-description-${task.id}` : "new-task-description"}
+        maxLength={5000}
+        onChange={(event) => setDescription(event.target.value)}
+        placeholder="Add a few details (optional)"
+        rows={2}
+        value={description}
+      />
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <div className="task-form-actions">
+        {onCancel && (
+          <button className="secondary-button" disabled={isSubmitting} onClick={onCancel} type="button">
+            Cancel
+          </button>
+        )}
+        <button className="primary-button task-submit" disabled={isSubmitting} type="submit">
+          {isSubmitting ? "Saving…" : task ? "Save changes" : "Add task"}
+        </button>
+      </div>
+    </form>
+  );
+}

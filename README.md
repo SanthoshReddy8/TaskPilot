@@ -4,7 +4,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 
 **Stack:** React · TypeScript · Tailwind CSS · Node.js · Express · Prisma · PostgreSQL · JWT · OpenAI
 
-## Features 1–2 — Setup and authentication
+## Features 1–3 — Setup, authentication, and tasks
 
 - React app at [http://localhost:5173](http://localhost:5173)
 - Express API at [http://localhost:5000](http://localhost:5000)
@@ -12,6 +12,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 - Prisma schema and migrations for `User` and `Task`
 - Cookie-based registration, login, current-user, and logout endpoints
 - Protected dashboard with session restoration on page refresh
+- Authenticated users can create, view, edit, and delete their own tasks
 
 ## Local setup
 
@@ -53,7 +54,9 @@ cd ..
 ```
 
 This applies the initial schema and the authentication migration, which renames
-the existing password column without discarding user data.
+the existing password column without discarding user data. It also applies the
+task CRUD migration, making task descriptions optional and indexing each user's
+tasks by creation date.
 
 ### 5. Start frontend and backend
 
@@ -80,6 +83,21 @@ requests only from `CLIENT_ORIGIN` and checks the `Origin` header on state-chang
 requests. Cookies use `SameSite=Lax` locally and `SameSite=None; Secure` in
 production for separate frontend/backend hosts; deploy behind HTTPS.
 
+## Task API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/tasks` | Create a task |
+| `GET` | `/api/tasks` | List the authenticated user's tasks |
+| `GET` | `/api/tasks/:id` | Get one of the authenticated user's tasks |
+| `PATCH` | `/api/tasks/:id` | Update a task title or description |
+| `DELETE` | `/api/tasks/:id` | Delete a task |
+
+Task requests require the authentication cookie. Task titles are required and
+limited to 200 characters; descriptions are optional and limited to 5000
+characters. A user's ID always comes from the verified session, and requests for
+another user's task return `404`.
+
 ## Project structure
 
 ```
@@ -98,7 +116,7 @@ task-manager/
 
 1. Project setup and architecture
 2. User authentication — implemented
-3. Task CRUD
+3. Task CRUD — implemented
 4. Status and priority
 5. Deadlines and overdue tasks
 6. Search, filters, and sorting

@@ -7,6 +7,7 @@ import { csrfProtection } from "./middleware/csrfProtection";
 import { AuthError, getJwtSecret } from "./services/authService";
 import authRouter from "./routes/auth";
 import healthRouter from "./routes/health";
+import tasksRouter from "./routes/tasks";
 import { prisma } from "./lib/prisma";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -27,6 +28,7 @@ app.use("/api", csrfProtection(clientOrigin));
 
 app.use("/api", healthRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/tasks", tasksRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
