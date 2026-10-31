@@ -205,40 +205,238 @@
   margin-top: 0;
 }
 
-.placeholder-card {
-  display: flex;
-  gap: 18px;
-  margin-top: 36px;
-  padding: 25px;
-  border: 1px solid #e7e5dc;
-  border-radius: 14px;
-  background: #fff;
+.tasks-section {
+  margin-top: 46px;
 }
 
-.placeholder-icon {
+.tasks-heading-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.tasks-heading-row .eyebrow {
+  margin: 0 0 8px;
+}
+
+.tasks-heading-row h2 {
+  margin: 0;
+  color: #292a23;
+  font-size: clamp(20px, 4vw, 25px);
+  font-weight: 650;
+  letter-spacing: -0.65px;
+}
+
+.task-count {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border: 1px solid #e4e3db;
+  border-radius: 999px;
+  background: #fff;
+  color: #77776e;
+  font-size: 12px;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid #e5e3db;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 8px 26px rgb(46 42 32 / 4%);
+}
+
+.task-form input,
+.task-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #e4e2da;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #292a23;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.task-form input {
+  min-height: 44px;
+  font-weight: 550;
+}
+
+.task-form textarea {
+  min-height: 62px;
+  line-height: 1.5;
+}
+
+.task-form input:focus,
+.task-form textarea:focus {
+  border-color: #83916a;
+  box-shadow: 0 0 0 3px rgb(100 115 75 / 12%);
+}
+
+.task-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.task-form .form-error {
+  margin: 0;
+}
+
+.task-submit {
+  min-height: 40px;
+  padding: 0 18px;
+}
+
+.task-form .secondary-button {
+  min-height: 40px;
+}
+
+.task-list {
+  display: grid;
+  gap: 11px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  border: 1px solid #e7e5dc;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 5px 16px rgb(46 42 32 / 3%);
+}
+
+.task-card-copy {
+  min-width: 0;
+}
+
+.task-card-copy h3 {
+  overflow-wrap: anywhere;
+  margin: 0;
+  color: #303129;
+  font-size: 15px;
+  font-weight: 620;
+}
+
+.task-card-copy p {
+  overflow-wrap: anywhere;
+  margin: 7px 0 0;
+  color: #77776e;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.task-card-copy time {
+  display: block;
+  margin-top: 9px;
+  color: #929188;
+  font-size: 11px;
+}
+
+.task-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.text-button {
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  color: #596746;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.text-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.text-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.text-button-danger {
+  color: #a04b40;
+}
+
+.task-card-editing {
+  display: block;
+  padding: 14px;
+}
+
+.task-item-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.task-empty-state {
+  display: grid;
+  justify-items: center;
+  margin-top: 18px;
+  padding: 40px 20px;
+  border: 1px dashed #deddd4;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 55%);
+  text-align: center;
+}
+
+.task-empty-state > span {
   display: grid;
   width: 42px;
   height: 42px;
-  flex: 0 0 auto;
   place-items: center;
-  border-radius: 12px;
+  border-radius: 13px;
   background: #eff1e9;
   color: #64734b;
   font-size: 20px;
 }
 
-.placeholder-card h2 {
-  margin: 1px 0 7px;
-  color: #2b2c25;
-  font-size: 16px;
-  font-weight: 650;
+.task-empty-state h3 {
+  margin: 13px 0 4px;
+  color: #383930;
+  font-size: 15px;
 }
 
-.placeholder-card p {
+.task-empty-state p {
   margin: 0;
   color: #77776e;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.5;
+}
+
+.task-load-error {
+  margin-top: 18px;
+}
+
+.task-load-error .text-button {
+  margin-top: 8px;
+}
+
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
 @media (max-width: 520px) {
@@ -250,7 +448,17 @@
     min-height: 66px;
   }
 
-  .placeholder-card {
-    padding: 19px;
+  .tasks-heading-row {
+    align-items: start;
+  }
+
+  .task-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .task-card-actions {
+    justify-content: flex-end;
   }
 }
