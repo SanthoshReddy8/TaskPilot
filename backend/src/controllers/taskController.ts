@@ -4,9 +4,9 @@ import { prisma } from "../lib/prisma";
 import { TaskError } from "../services/taskService";
 import {
   readCreateTaskInput,
-  readUpdateTaskInput,
   taskSelect,
 } from "../services/taskService";
+import { updateTaskSchema } from "../validators/taskValidator";
 
 function requireUserId(req: Request): string {
   if (!req.userId) {
@@ -70,10 +70,18 @@ export async function updateTask(req: Request, res: Response, next: NextFunction
   try {
     const id = requireTaskId(req);
     const userId = requireUserId(req);
-    const data = readUpdateTaskInput(req.body);
+    const parsed = updateTaskSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        message: "Invalid task data",
+        errors: parsed.error.flatten(),
+      });
+      return;
+    }
+
     const result = await prisma.task.updateMany({
       where: { id, userId },
-      data,
+      data: parsed.data,
     });
     if (result.count === 0) {
       throw new TaskError("Task not found", 404);

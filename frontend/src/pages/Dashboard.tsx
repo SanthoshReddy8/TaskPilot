@@ -4,7 +4,7 @@ import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import { useAuth } from "../context/useAuth";
 import { taskService } from "../services/taskService";
-import type { Task, TaskInput } from "../types/task";
+import type { Task, TaskInput, TaskUpdateInput } from "../types/task";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -58,9 +58,10 @@ export default function Dashboard() {
     setTasks((currentTasks) => [task, ...currentTasks]);
   }
 
-  async function handleUpdate(id: string, input: Partial<TaskInput>) {
+  async function handleUpdate(id: string, input: TaskUpdateInput): Promise<Task> {
     const updatedTask = await taskService.update(id, input);
     setTasks((currentTasks) => currentTasks.map((task) => task.id === id ? updatedTask : task));
+    return updatedTask;
   }
 
   async function handleDelete(id: string) {
