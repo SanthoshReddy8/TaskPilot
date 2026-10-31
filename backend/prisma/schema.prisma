@@ -35,11 +35,12 @@ model Task {
   description String?
   status      TaskStatus   @default(TODO)
   priority    TaskPriority @default(MEDIUM)
-  dueDate     DateTime?
+  dueDate     DateTime?    @db.Date
   userId      String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@index([userId, createdAt])
+  @@index([userId, dueDate])
 }

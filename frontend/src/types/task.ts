@@ -8,6 +8,7 @@ export interface Task {
   description: string | null;
   status: TaskStatus;
   priority: TaskPriority;
+  dueDate: string | null;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -16,6 +17,7 @@ export interface Task {
 export interface TaskInput {
   title: string;
   description?: string | null;
+  dueDate?: string | null;
 }
 
 export type TaskUpdateInput = Partial<TaskInput> & {

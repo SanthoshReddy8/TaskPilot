@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import { useAuth } from "../context/useAuth";
 import { taskService } from "../services/taskService";
 import type { Task, TaskInput, TaskUpdateInput } from "../types/task";
+import { isOverdue, isUpcoming, sortByDeadline } from "../utils/taskDeadline";
+
+type DeadlineFilter = "all" | "overdue" | "upcoming";
+type TaskSort = "deadline" | "newest";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -12,10 +16,26 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoadingTasks, setIsLoadingTasks] = useState(true);
   const [tasksError, setTasksError] = useState<string | null>(null);
+  const [deadlineFilter, setDeadlineFilter] = useState<DeadlineFilter>("all");
+  const [taskSort, setTaskSort] = useState<TaskSort>("deadline");
   const [error, setError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const fetchTasks = useCallback(() => taskService.getAll(), []);
+  const overdueCount = tasks.filter((task) => isOverdue(task)).length;
+  const upcomingCount = tasks.filter((task) => isUpcoming(task)).length;
+  const visibleTasks = useMemo(() => {
+    const filtered = tasks.filter((task) => {
+      if (deadlineFilter === "overdue") return isOverdue(task);
+      if (deadlineFilter === "upcoming") return isUpcoming(task);
+      return true;
+    });
+
+    if (taskSort === "deadline") {
+      return sortByDeadline(filtered);
+    }
+    return [...filtered].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [deadlineFilter, taskSort, tasks]);
 
   useEffect(() => {
     let active = true;
@@ -108,6 +128,27 @@ export default function Dashboard() {
             </div>
             <span className="task-count">{tasks.length} {tasks.length === 1 ? "task" : "tasks"}</span>
           </div>
+          <div className="deadline-summary" aria-label="Deadline summary">
+            <span><strong>{overdueCount}</strong> overdue</span>
+            <span><strong>{upcomingCount}</strong> due in the next 7 days</span>
+          </div>
+          <div className="task-view-controls">
+            <label>
+              <span>Show</span>
+              <select value={deadlineFilter} onChange={(event) => setDeadlineFilter(event.target.value as DeadlineFilter)}>
+                <option value="all">All tasks</option>
+                <option value="overdue">Overdue</option>
+                <option value="upcoming">Upcoming</option>
+              </select>
+            </label>
+            <label>
+              <span>Sort by</span>
+              <select value={taskSort} onChange={(event) => setTaskSort(event.target.value as TaskSort)}>
+                <option value="deadline">Earliest deadline</option>
+                <option value="newest">Recently added</option>
+              </select>
+            </label>
+          </div>
           <TaskForm onSubmit={handleCreate} />
           {tasksError ? (
             <div className="task-load-error">
@@ -118,10 +159,12 @@ export default function Dashboard() {
             </div>
           ) : (
             <TaskList
+              emptyMessage={deadlineFilter === "all" ? undefined : `No ${deadlineFilter} tasks right now.`}
+              emptyTitle={deadlineFilter === "all" ? undefined : "Nothing to show"}
               isLoading={isLoadingTasks}
               onDelete={handleDelete}
               onUpdate={handleUpdate}
-              tasks={tasks}
+              tasks={visibleTasks}
             />
           )}
         </section>
