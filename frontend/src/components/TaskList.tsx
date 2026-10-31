@@ -1,10 +1,10 @@
 import TaskItem from "./TaskItem";
-import type { Task, TaskInput } from "../types/task";
+import type { Task, TaskUpdateInput } from "../types/task";
 
 type TaskListProps = {
   tasks: Task[];
   isLoading: boolean;
-  onUpdate: (id: string, input: Partial<TaskInput>) => Promise<void>;
+  onUpdate: (id: string, input: TaskUpdateInput) => Promise<Task>;
   onDelete: (id: string) => Promise<void>;
 };
 

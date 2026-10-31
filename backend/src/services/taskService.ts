@@ -4,6 +4,8 @@ export const taskSelect = {
   id: true,
   title: true,
   description: true,
+  status: true,
+  priority: true,
   userId: true,
   createdAt: true,
   updatedAt: true,
@@ -12,11 +14,6 @@ export const taskSelect = {
 type CreateTaskInput = {
   title: string;
   description: string | null;
-};
-
-type UpdateTaskInput = {
-  title?: string;
-  description?: string | null;
 };
 
 export class TaskError extends Error {
@@ -62,8 +59,8 @@ function readDescription(value: unknown): string | null {
     throw new TaskError("Description must be a string or null", 400);
   }
   const description = value.trim();
-  if (description.length > 5000) {
-    throw new TaskError("Description must be 5000 characters or fewer", 400);
+  if (description.length > 2000) {
+    throw new TaskError("Description must be 2000 characters or fewer", 400);
   }
   return description || null;
 }
@@ -75,21 +72,4 @@ export function readCreateTaskInput(body: unknown): CreateTaskInput {
     title: readTitle(input.title),
     description: readDescription(input.description),
   };
-}
-
-export function readUpdateTaskInput(body: unknown): UpdateTaskInput {
-  const input = readTaskBody(body);
-  rejectUnknownFields(input);
-  if (Object.keys(input).length === 0) {
-    throw new TaskError("Provide a title or description to update", 400);
-  }
-
-  const data: UpdateTaskInput = {};
-  if (Object.hasOwn(input, "title")) {
-    data.title = readTitle(input.title);
-  }
-  if (Object.hasOwn(input, "description")) {
-    data.description = readDescription(input.description);
-  }
-  return data;
 }

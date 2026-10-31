@@ -1,4 +1,4 @@
-import type { Task, TaskInput } from "../types/task";
+import type { Task, TaskInput, TaskUpdateInput } from "../types/task";
 
 export class TaskApiError extends Error {
   readonly status: number;
@@ -21,8 +21,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T | 
   });
 
   if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new TaskApiError(body?.error || "The request could not be completed", response.status);
+    const body = (await response.json().catch(() => null)) as { error?: string; message?: string } | null;
+    throw new TaskApiError(body?.error || body?.message || "The request could not be completed", response.status);
   }
 
   if (response.status === 204) {
@@ -51,7 +51,7 @@ export const taskService = {
       body: JSON.stringify(data),
     }),
 
-  update: (id: string, data: Partial<TaskInput>) =>
+  update: (id: string, data: TaskUpdateInput) =>
     requireResponse<Task>(`/${encodeURIComponent(id)}`, {
       method: "PATCH",
       body: JSON.stringify(data),

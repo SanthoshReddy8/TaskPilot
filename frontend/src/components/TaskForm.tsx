@@ -56,7 +56,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
       </label>
       <textarea
         id={task ? `edit-description-${task.id}` : "new-task-description"}
-        maxLength={5000}
+        maxLength={2000}
         onChange={(event) => setDescription(event.target.value)}
         placeholder="Add a few details (optional)"
         rows={2}
