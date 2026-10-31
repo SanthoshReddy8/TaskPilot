@@ -4,7 +4,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 
 **Stack:** React · TypeScript · Tailwind CSS · Node.js · Express · Prisma · PostgreSQL · JWT · OpenAI
 
-## Features 1–4 — Setup, authentication, tasks, status, and priority
+## Features 1–5 — Setup, authentication, tasks, status, priority, and deadlines
 
 - React app at [http://localhost:5173](http://localhost:5173)
 - Express API at [http://localhost:5000](http://localhost:5000)
@@ -14,6 +14,7 @@ AI-powered personal task and productivity tracker. Built as a resume-ready full-
 - Protected dashboard with session restoration on page refresh
 - Authenticated users can create, view, edit, and delete their own tasks
 - Per-task Todo, In Progress, and Completed statuses, plus Low, Medium, and High priorities
+- Optional calendar deadlines with overdue/upcoming indicators, filtering, and deadline sorting
 
 ## Local setup
 
@@ -58,7 +59,8 @@ This applies the initial schema and the authentication migration, which renames
 the existing password column without discarding user data. It also applies the
 task CRUD migration, making task descriptions optional and indexing each user's
 tasks by creation date, followed by the status/priority migration, which renames
-the existing priority enum without changing task data.
+the existing priority enum without changing task data. The deadline migration
+converts due dates to calendar dates and adds a per-user deadline index.
 
 ### 5. Start frontend and backend
 
@@ -92,7 +94,7 @@ production for separate frontend/backend hosts; deploy behind HTTPS.
 | `POST` | `/api/tasks` | Create a task |
 | `GET` | `/api/tasks` | List the authenticated user's tasks |
 | `GET` | `/api/tasks/:id` | Get one of the authenticated user's tasks |
-| `PATCH` | `/api/tasks/:id` | Update a task title or description |
+| `PATCH` | `/api/tasks/:id` | Update task fields, status, priority, or deadline |
 | `DELETE` | `/api/tasks/:id` | Delete a task |
 
 Task requests require the authentication cookie. Task titles are required and
@@ -100,10 +102,13 @@ limited to 200 characters; descriptions are optional and limited to 2000
 characters. A user's ID always comes from the verified session, and requests for
 another user's task return `404`.
 
-Task updates also accept `status` (`TODO`, `IN_PROGRESS`, `COMPLETED`) and
-`priority` (`LOW`, `MEDIUM`, `HIGH`) independently. New tasks default to `TODO`
-and `MEDIUM`; changing one field preserves the others. The dashboard provides
-status and priority selectors on each task card.
+Task updates also accept `status` (`TODO`, `IN_PROGRESS`, `COMPLETED`),
+`priority` (`LOW`, `MEDIUM`, `HIGH`), and an optional `dueDate` in `YYYY-MM-DD`
+format (or `null` to remove it). New tasks default to `TODO` and `MEDIUM`;
+changing one field preserves the others. Overdue and upcoming deadlines use the
+user's local calendar date; completed tasks are excluded from both. The
+dashboard supports filtering by deadline, sorting by earliest deadline, and
+editing or clearing deadlines on task cards.
 
 ## Project structure
 
@@ -125,7 +130,7 @@ task-manager/
 2. User authentication — implemented
 3. Task CRUD — implemented
 4. Status and priority — implemented
-5. Deadlines and overdue tasks
+5. Deadlines and overdue tasks — implemented
 6. Search, filters, and sorting
 7. Productivity dashboard
 8. AI task breakdown

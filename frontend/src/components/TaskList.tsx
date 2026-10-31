@@ -4,11 +4,20 @@ import type { Task, TaskUpdateInput } from "../types/task";
 type TaskListProps = {
   tasks: Task[];
   isLoading: boolean;
+  emptyTitle?: string;
+  emptyMessage?: string;
   onUpdate: (id: string, input: TaskUpdateInput) => Promise<Task>;
   onDelete: (id: string) => Promise<void>;
 };
 
-export default function TaskList({ tasks, isLoading, onUpdate, onDelete }: TaskListProps) {
+export default function TaskList({
+  tasks,
+  isLoading,
+  emptyTitle = "Your list starts here",
+  emptyMessage = "Add a task above to turn your plans into progress.",
+  onUpdate,
+  onDelete,
+}: TaskListProps) {
   if (isLoading) {
     return <p className="loading-message" role="status">Loading your tasks…</p>;
   }
@@ -17,8 +26,8 @@ export default function TaskList({ tasks, isLoading, onUpdate, onDelete }: TaskL
     return (
       <div className="task-empty-state">
         <span aria-hidden="true">✦</span>
-        <h3>Your list starts here</h3>
-        <p>Add a task above to turn your plans into progress.</p>
+        <h3>{emptyTitle}</h3>
+        <p>{emptyMessage}</p>
       </div>
     );
   }

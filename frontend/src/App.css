@@ -2,6 +2,62 @@
   min-height: 100vh;
 }
 
+.deadline-summary,
+.task-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deadline-summary {
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+  color: #77776e;
+  font-size: 12px;
+}
+
+.deadline-summary span {
+  padding: 7px 10px;
+  border: 1px solid #e6e4dc;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.deadline-summary strong {
+  color: #34352e;
+}
+
+.task-view-controls {
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.task-view-controls label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #77776e;
+  font-size: 12px;
+}
+
+.task-view-controls select {
+  min-height: 36px;
+  max-width: 190px;
+  padding: 0 27px 0 10px;
+  border: 1px solid #e4e2da;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #47483f;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.task-view-controls select:focus {
+  border-color: #83916a;
+  box-shadow: 0 0 0 3px rgb(100 115 75 / 12%);
+}
+
 .page-shell {
   display: grid;
   min-height: 100vh;
@@ -11,6 +67,38 @@
     radial-gradient(ellipse at 10% 12%, rgb(226 232 218 / 55%), transparent 35%),
     radial-gradient(ellipse at 92% 88%, rgb(243 226 204 / 60%), transparent 34%),
     #f7f6f2;
+}
+
+.deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 8px;
+  border: 1px solid #e5e3db;
+  border-radius: 999px;
+  background: #f8f8f5;
+  color: #6d6d63;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.deadline-badge time {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 500;
+}
+
+.deadline-overdue {
+  border-color: #f0d4ce;
+  background: #fff3f1;
+  color: #a13e32;
+}
+
+.deadline-upcoming {
+  border-color: #f0e2bd;
+  background: #fff9e9;
+  color: #8a691c;
 }
 
 .auth-card {
@@ -274,6 +362,22 @@
   line-height: 1.5;
 }
 
+.task-date-label {
+  margin-bottom: -7px;
+  color: #55564d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-date-label span {
+  color: #8c8b82;
+  font-weight: 400;
+}
+
+.task-form input[type="date"] {
+  max-width: 230px;
+}
+
 .task-form input:focus,
 .task-form textarea:focus {
   border-color: #83916a;
@@ -519,6 +623,19 @@
 
   .tasks-heading-row {
     align-items: start;
+  }
+
+  .task-view-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .task-view-controls label {
+    justify-content: space-between;
+  }
+
+  .task-view-controls select {
+    flex: 0 1 190px;
   }
 
   .task-card {

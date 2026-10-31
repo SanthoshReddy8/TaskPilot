@@ -1,6 +1,7 @@
 import { useState } from "react";
 import TaskForm from "./TaskForm";
 import type { Task, TaskPriority, TaskStatus, TaskUpdateInput } from "../types/task";
+import { formatDueDate, isOverdue, isUpcoming } from "../utils/taskDeadline";
 
 type TaskItemProps = {
   task: Task;
@@ -25,6 +26,8 @@ export default function TaskItem({ task, onUpdate, onDelete }: TaskItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const overdue = isOverdue(task);
+  const upcoming = isUpcoming(task);
 
   async function update(input: TaskUpdateInput) {
     setError(null);
@@ -69,6 +72,10 @@ export default function TaskItem({ task, onUpdate, onDelete }: TaskItemProps) {
       <div className="task-card-copy">
         <h3 className={task.status === "COMPLETED" ? "task-title-completed" : undefined}>{task.title}</h3>
         {task.description && <p>{task.description}</p>}
+        <span className={`deadline-badge${overdue ? " deadline-overdue" : upcoming ? " deadline-upcoming" : ""}`}>
+          {overdue ? "Overdue" : upcoming ? "Upcoming" : task.dueDate ? "Due" : "No deadline"}
+          {task.dueDate && <time dateTime={task.dueDate.slice(0, 10)}>{formatDueDate(task.dueDate)}</time>}
+        </span>
         <time dateTime={task.createdAt}>
           Added {new Date(task.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
         </time>

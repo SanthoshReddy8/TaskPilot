@@ -2,11 +2,9 @@ import { Prisma } from "@prisma/client";
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { TaskError } from "../services/taskService";
-import {
-  readCreateTaskInput,
-  taskSelect,
-} from "../services/taskService";
-import { updateTaskSchema } from "../validators/taskValidator";
+import { taskSelect } from "../services/taskService";
+import { createTaskSchema, updateTaskSchema } from "../validators/taskValidator";
+import { toPrismaDate } from "../utils/taskDate";
 
 function requireUserId(req: Request): string {
   if (!req.userId) {
@@ -26,9 +24,22 @@ function requireTaskId(req: Request): string {
 export async function createTask(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = requireUserId(req);
-    const input = readCreateTaskInput(req.body);
+    const parsed = createTaskSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        message: "Invalid task data",
+        errors: parsed.error.flatten(),
+      });
+      return;
+    }
+
+    const { dueDate, ...otherFields } = parsed.data;
     const task = await prisma.task.create({
-      data: { ...input, userId },
+      data: {
+        ...otherFields,
+        dueDate: toPrismaDate(dueDate),
+        userId,
+      },
       select: taskSelect,
     });
     res.status(201).json(task);
@@ -79,9 +90,13 @@ export async function updateTask(req: Request, res: Response, next: NextFunction
       return;
     }
 
+    const { dueDate, ...otherFields } = parsed.data;
     const result = await prisma.task.updateMany({
       where: { id, userId },
-      data: parsed.data,
+      data: {
+        ...otherFields,
+        dueDate: toPrismaDate(dueDate),
+      },
     });
     if (result.count === 0) {
       throw new TaskError("Task not found", 404);

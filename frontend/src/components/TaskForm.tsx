@@ -11,6 +11,7 @@ type TaskFormProps = {
 export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
+  const [dueDate, setDueDate] = useState(task?.dueDate?.slice(0, 10) ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,10 +26,15 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     setError(null);
     setIsSubmitting(true);
     try {
-      await onSubmit({ title: trimmedTitle, description: description.trim() || null });
+      await onSubmit({
+        title: trimmedTitle,
+        description: description.trim() || null,
+        dueDate: dueDate || null,
+      });
       if (!task) {
         setTitle("");
         setDescription("");
+        setDueDate("");
       }
     } catch (cause) {
       setError(cause instanceof TaskApiError ? cause.message : "Could not save this task. Please try again.");
@@ -61,6 +67,15 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
         placeholder="Add a few details (optional)"
         rows={2}
         value={description}
+      />
+      <label className="task-date-label" htmlFor={task ? `edit-due-date-${task.id}` : "new-task-due-date"}>
+        Due date <span>(optional)</span>
+      </label>
+      <input
+        id={task ? `edit-due-date-${task.id}` : "new-task-due-date"}
+        onChange={(event) => setDueDate(event.target.value)}
+        type="date"
+        value={dueDate}
       />
       {error && <p className="form-error" role="alert">{error}</p>}
       <div className="task-form-actions">
